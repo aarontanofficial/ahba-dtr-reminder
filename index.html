@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AHBA DTR Reminder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0F12">
+  <meta name="description" content="Weekly DTR extraction checklist and Friday 7:00 AM reminder for AHBA Devt.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="DTR Reminder">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="brand">
+      <img src="./icons/icon.svg" alt="" width="44" height="44">
+      <div>
+        <h1>AHBA DTR Reminder</h1>
+        <p>Weekly attendance extraction</p>
+      </div>
+    </header>
+
+    <section class="panel hero" aria-labelledby="next-title">
+      <h2 id="next-title">Next reminder</h2>
+      <div class="countdown" id="countdown" role="timer" aria-live="off">
+        <div><span id="cd-d">0</span><small>days</small></div>
+        <div><span id="cd-h">00</span><small>hours</small></div>
+        <div><span id="cd-m">00</span><small>min</small></div>
+        <div><span id="cd-s">00</span><small>sec</small></div>
+      </div>
+      <p class="when" id="next-when">Every Friday at 7:00 AM, Philippine time</p>
+    </section>
+
+    <section class="panel" aria-labelledby="check-title">
+      <div class="panel-head">
+        <h2 id="check-title">DTR extraction checklist</h2>
+        <button type="button" class="btn ghost" id="reset-btn">Reset</button>
+      </div>
+      <p class="progress-text" id="progress-text">0 of 11 steps completed</p>
+      <div class="bar" role="progressbar" aria-labelledby="progress-text" aria-valuemin="0" aria-valuemax="11" aria-valuenow="0" id="bar">
+        <div class="bar-fill" id="bar-fill"></div>
+      </div>
+      <ol class="steps" id="steps"></ol>
+      <p class="note">Never type or save the ZKBio admin password in this app. Log in only inside ZKBio CVAccess.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="notif-title">
+      <h2 id="notif-title">Notifications</h2>
+      <p class="summary" id="setup-summary">Checking this device…</p>
+      <dl class="status">
+        <div><dt>Permission</dt><dd id="st-permission">…</dd></div>
+        <div><dt>Home Screen app</dt><dd id="st-install">…</dd></div>
+        <div><dt>This device</dt><dd id="st-backend">…</dd></div>
+        <div><dt>Last test</dt><dd id="st-test">None yet</dd></div>
+      </dl>
+      <div class="actions">
+        <button type="button" class="btn primary" id="enable-btn">Enable notifications</button>
+        <button type="button" class="btn" id="test-btn">Send test notification</button>
+      </div>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      <p class="note">Each phone or tablet must enable notifications on its own. On iPhone, add this app to the Home Screen first (iOS 16.4 or later).</p>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
