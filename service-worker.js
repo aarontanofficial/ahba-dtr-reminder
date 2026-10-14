@@ -1,8 +1,8 @@
 const CACHE = 'ahba-dtr-shell-v2';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './config.js',
-  './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png',
-  './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/badge-96.png'
+  './manifest.webmanifest', './icon.svg', './icon-192.png',
+  './icon-512.png', './apple-touch-icon.png', './badge-96.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -43,8 +43,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'AHBA DTR Reminder';
   const options = {
     body: data.body || 'Time to extract this week\u2019s attendance (DTR).',
-    icon: './icons/icon-192.png',
-    badge: './icons/badge-96.png',
+    icon: './icon-192.png',
+    badge: './badge-96.png',
     tag: data.tag || 'ahba-dtr',
     data: { url: data.url || './' }
   };
