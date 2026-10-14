@@ -7,25 +7,27 @@
   <meta name="theme-color" content="#0E0F12">
   <meta name="description" content="Weekly DTR extraction checklist and Friday 7:00 AM reminder for AHBA Devt.">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="DTR Reminder">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
   <main class="app">
     <header class="brand">
-      <img src="icon.svg" alt="" width="44" height="44">
+      <img src="./icon.svg" alt="" width="44" height="44">
       <div>
         <h1>AHBA DTR Reminder</h1>
         <p>Weekly attendance extraction</p>
       </div>
     </header>
 
-    <section class="panel hero" aria-labelledby="next-title">
+    <section class="panel hero tilt" aria-labelledby="next-title">
       <h2 id="next-title">Next reminder</h2>
       <div class="countdown" id="countdown" role="timer" aria-live="off">
         <div><span id="cd-d">0</span><small>days</small></div>
@@ -36,14 +38,26 @@
       <p class="when" id="next-when">Every Friday at 7:00 AM, Philippine time</p>
     </section>
 
+    <section class="panel stats tilt" aria-label="Your record">
+      <div class="chip"><span id="st-streak">0</span><small>week streak</small></div>
+      <div class="chip"><span id="st-total">0</span><small>completed</small></div>
+      <div class="chip wide"><span id="st-rank">Newcomer</span><small id="st-next">Finish a week to rank up</small></div>
+    </section>
+
     <section class="panel" aria-labelledby="check-title">
       <div class="panel-head">
         <h2 id="check-title">DTR extraction checklist</h2>
         <button type="button" class="btn ghost" id="reset-btn">Reset</button>
       </div>
       <p class="progress-text" id="progress-text">0 of 11 steps completed</p>
+      <p class="cheer" id="cheer">Ready when you are.</p>
       <div class="bar" role="progressbar" aria-labelledby="progress-text" aria-valuemin="0" aria-valuemax="11" aria-valuenow="0" id="bar">
         <div class="bar-fill" id="bar-fill"></div>
+      </div>
+      <div class="quest" id="quest" hidden>
+        <div class="mini-coin" aria-hidden="true"></div>
+        <div class="quest-text"><strong>Weekly quest complete</strong><span id="quest-sub">Great work this week.</span></div>
+        <button type="button" class="btn ghost" id="reward-open">Reward</button>
       </div>
       <ol class="steps" id="steps"></ol>
       <p class="note">Never type or save the ZKBio admin password in this app. Log in only inside ZKBio CVAccess.</p>
@@ -66,6 +80,26 @@
       <p class="note">Each phone or tablet must enable notifications on its own. On iPhone, add this app to the Home Screen first (iOS 16.4 or later).</p>
     </section>
   </main>
+
+  <div class="overlay" id="reward" hidden role="dialog" aria-modal="true" aria-labelledby="reward-title">
+    <div class="reward-card tilt" id="reward-card">
+      <div class="coin-wrap" aria-hidden="true">
+        <div class="coin">
+          <div class="face"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="33" fill="none" stroke="#3a2f0a" stroke-width="5"/><g stroke="#3a2f0a" stroke-width="5" stroke-linecap="round"><line x1="50" y1="50" x2="50" y2="29"/><line x1="50" y1="50" x2="39" y2="69"/></g><circle cx="50" cy="50" r="4" fill="#3a2f0a"/></svg></div>
+          <div class="face back"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="33" fill="none" stroke="#3a2f0a" stroke-width="5"/><g stroke="#3a2f0a" stroke-width="5" stroke-linecap="round"><line x1="50" y1="50" x2="50" y2="29"/><line x1="50" y1="50" x2="39" y2="69"/></g><circle cx="50" cy="50" r="4" fill="#3a2f0a"/></svg></div>
+        </div>
+      </div>
+      <h2 id="reward-title">Congratulations!</h2>
+      <p id="reward-text">You’ve completed your weekly DTR extraction.</p>
+      <p class="reward-extra" id="reward-extra"></p>
+      <div class="reward-stats">
+        <div><span id="rw-streak">1</span><small>week streak</small></div>
+        <div><span id="rw-total">1</span><small>completed</small></div>
+        <div><span id="rw-rank">Extractor</span><small>rank</small></div>
+      </div>
+      <button type="button" class="btn primary" id="reward-close">Awesome</button>
+    </div>
+  </div>
 
   <script src="./config.js"></script>
   <script src="./app.js"></script>
