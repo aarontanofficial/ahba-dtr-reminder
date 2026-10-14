@@ -1,4 +1,4 @@
-const CACHE = 'ahba-dtr-shell-v1';
+const CACHE = 'ahba-dtr-shell-v2';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './config.js',
   './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png',
@@ -6,7 +6,12 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // A missing file must never stop the worker from installing.
+  event.waitUntil(
+    caches.open(CACHE)
+      .then((c) => Promise.all(SHELL.map((url) => c.add(url).catch(() => null))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
