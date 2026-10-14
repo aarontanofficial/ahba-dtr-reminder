@@ -134,12 +134,39 @@
     return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
+  function withTimeout(promise, ms, message) {
+    let timer;
+    const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(message)), ms); });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+  }
+
+  async function getReadyRegistration() {
+    let reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) reg = await navigator.serviceWorker.register('./service-worker.js');
+    return withTimeout(
+      navigator.serviceWorker.ready, 10000,
+      'The background worker did not start. Close the app completely, reopen it, and try again. If it repeats, re-upload service-worker.js and the icons folder to GitHub.'
+    );
+  }
+
   async function callBackend(payload) {
-    const res = await fetch(CFG.FUNCTIONS_URL.replace(/\/$/, '') + '/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    let res;
+    try {
+      res = await fetch(CFG.FUNCTIONS_URL.replace(/\/$/, '') + '/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+    } catch (e) {
+      throw new Error(e.name === 'AbortError'
+        ? 'The server did not answer in time. Check your internet and try again.'
+        : 'Could not reach the server. Check FUNCTIONS_URL in config.js and that the subscribe function is deployed.');
+    } finally {
+      clearTimeout(timer);
+    }
     let data = {};
     try { data = await res.json(); } catch (e) { /* non-JSON response */ }
     if (!res.ok || data.ok === false) throw new Error(data.error || `Server error (${res.status}).`);
@@ -220,7 +247,7 @@
     try {
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') throw new Error('Permission was not granted. Allow notifications for this app in your device settings.');
-      const reg = await navigator.serviceWorker.ready;
+      const reg = await getReadyRegistration();
       let sub = await reg.pushManager.getSubscription();
       if (sub && sub.options && sub.options.applicationServerKey &&
           bytesToB64url(sub.options.applicationServerKey) !== CFG.VAPID_PUBLIC_KEY) {
@@ -228,10 +255,10 @@
         sub = null;
       }
       if (!sub) {
-        sub = await reg.pushManager.subscribe({
+        sub = await withTimeout(reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: b64ToBytes(CFG.VAPID_PUBLIC_KEY)
-        });
+        }), 15000, 'The phone did not complete the push registration. Check the VAPID public key in config.js.');
       }
       await callBackend({ action: 'subscribe', subscription: sub.toJSON() });
       localStorage.setItem(KEY_ENDPOINT, sub.endpoint);
